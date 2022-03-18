@@ -2,11 +2,7 @@
 
 #include <assert.h>
 
-#include <algorithm>
 #include <cstddef>
-#include <iostream>
-#include <numeric>
-#include <vector>
 
 #include "core.hpp"
 #include "test_gen.hpp"
