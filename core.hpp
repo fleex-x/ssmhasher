@@ -16,7 +16,7 @@ using TimePoint = Clock::time_point;
 using HashFunction = void (*)(std::byte* key, size_t key_len, std::byte* out,
                               std::size_t out_len);
 
-TimePoint Now() { return Clock::now(); }
+inline TimePoint Now() { return Clock::now(); }
 
 template <typename Duration>
 Microseconds AsMicroseconds(Duration dur) {
