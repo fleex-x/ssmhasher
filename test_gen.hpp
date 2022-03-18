@@ -20,7 +20,7 @@ class TestGen {
 
   explicit TestGen(uint32_t seed);
 
-  void gen(std::byte *blob, size_t size);
+  void gen(std::byte *blob, std::size_t size);
 };
 
 }  // namespace ssmhasher
