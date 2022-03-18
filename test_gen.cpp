@@ -29,7 +29,9 @@ TestGen::TestGen(uint32_t seed) {
   z = 0;
   w = 0;
 
-  for (int i = 0; i < 10; i++) mix();
+  for (int i = 0; i < 10; i++) {
+    mix();
+  }
 }
 
 TestGen::TestGen() : TestGen(0) {}
