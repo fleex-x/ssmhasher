@@ -5,10 +5,11 @@
 
 namespace ssmhasher {
 using Microseconds =
-    std::chrono::duration<std::size_t, std::chrono::microseconds>;
+    std::chrono::duration<long long, std::micro>;
 using Milliseconds =
-    std::chrono::duration<std::size_t, std::chrono::milliseconds>;
-using Seconds = std::chrono::duration<std::size_t, std::chrono::seconds>;
+    std::chrono::duration<long long, std::milli>;
+using Seconds = std::chrono::duration<long long>;
+using RealSeconds = double;
 using Clock = std::chrono::steady_clock;
 using TimePoint = Clock::time_point;
 
@@ -19,17 +20,17 @@ TimePoint Now() { return Clock::now(); }
 
 template <typename Duration>
 Microseconds AsMicroseconds(Duration dur) {
-  return std::duration_cast<std::chrono::microseconds>(dur);
+  return std::chrono::duration_cast<Microseconds>(dur);
 }
 
 template <typename Duration>
 Milliseconds AsMilliseconds(Duration dur) {
-  return std::duration_cast<std::chrono::microseconds>(dur);
+  return std::chrono::duration_cast<Milliseconds>(dur);
 }
 
 template <typename Duration>
 Seconds AsSeconds(Duration dur) {
-  return std::duration_cast<std::chrono::microseconds>(dur);
+  return std::chrono::duration_cast<Seconds>(dur);
 }
 
 }  // namespace ssmhasher
