@@ -7,6 +7,8 @@
 #include <numeric>
 #include <vector>
 
+#include <iostream>
+
 #include "core.hpp"
 #include "test_gen.hpp"
 
@@ -15,9 +17,10 @@ template <std::size_t KEY_LEN, std::size_t OUT_LEN>
 Milliseconds SingleSpeedTest(HashFunction func, std::byte* key) {
   constexpr bool valid_len = OUT_LEN <= 4096;
   static_assert(OUT_LEN <= 4096, "Use another version of 'SingleSpeedTest'");
-  TimePoint begin = now();
-  std::byte arr[OUT_LEN];
-  func(key, KEY_LEN, out, OUT_LEN) return AsMilliseconds(Now() - begin);
+  TimePoint begin = Now();
+  std::byte out[OUT_LEN];
+  func(key, KEY_LEN, out, OUT_LEN);
+   return AsMilliseconds(Now() - begin);
 }
 
 Milliseconds SingleSpeedTest(HashFunction func, std::byte* key,
@@ -41,6 +44,9 @@ RealSeconds SpeedTest(HashFunction func, std::size_t attempts,
     auto current_test_time =
         SingleSpeedTest(func, key_storage, key_len, out_storage, out_len);
     time_of_tests.push_back(current_test_time);
+    
+    // debug
+    // std::cout << current_test_time.count() << " millis -- tooken for single test\n";
   }
 
   std::vector<double> real_times(time_of_tests.size(), 0.0);
@@ -58,7 +64,8 @@ RealSeconds SpeedTest(HashFunction func, std::size_t attempts,
 
   constexpr std::size_t MS_PER_SECOND = 1000;
 
-  return response * MS_PER_SECOND / real_times.size();
+  return (response / MS_PER_SECOND) / real_times.size();
+
 }
 
 }  // namespace ssmhasher

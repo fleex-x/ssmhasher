@@ -1,5 +1,4 @@
 #include "test_gen.hpp"
-#include <malloc.h>
 
 namespace ssmhasher {
 
@@ -8,7 +7,7 @@ uint32_t TestGen::randU32() {
   return x;
 }
 
-void TestGen::gen(std::byte *blob, size_t size) {
+void TestGen::gen(std::byte *blob, std::size_t size) {
   auto *blocks = reinterpret_cast<uint32_t *>(blob);
 
   while (size >= 4) {
