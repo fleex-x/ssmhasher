@@ -1,55 +1,51 @@
 
+#include <assert.h>
+
+#include <cstring>
+#include <iostream>
+#include <random>
+
+#include "basic_hash.hpp"
 #include "measure.hpp"
 #include "test_gen.hpp"
-#include "basic_hash.hpp"
 
-#include <assert.h>
-#include <cstring>
-
-#include <iostream>
-
-void raw_access_wrapper(std::byte * in, std::size_t key_len, std::byte * out, std::size_t out_len) {
-    assert(key_len <= out_len);
-    // memcpy((void*)out, (const void *)in, (int)key_len);
-     for (int i = 0; i < key_len; ++i) {
-        volatile std::byte x = in[i];
-    }
+void raw_access_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
+                        std::size_t out_len) {
+  // assert(key_len <= out_len);
+  for (int i = 0; i < key_len; ++i) {
+    volatile std::byte x = in[i];
+  }
 }
 
-void memcpy_wrapper(std::byte * in, std::size_t key_len, std::byte * out, std::size_t out_len) {
-    assert(key_len <= out_len);
-    memcpy((void*)out, (const void *)in, (int)key_len);
-    //  for (int i = 0; i < key_len; ++i) {
-        // volatile std::byte x = in[i];
-    // }
+void memcpy_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
+                    std::size_t out_len) {
+  // assert(key_len <= out_len);
+  memcpy((void *)out, (const void *)in, (int)key_len);
 }
 
 int main() {
-    using namespace ssmhasher;
-    using namespace basic_hash;
+  using namespace ssmhasher;
+  using namespace basic_hash;
 
+  TestGen tg (std::rand());
+  auto b = std::chrono::steady_clock::now();
 
-    TestGen tg;
-    auto b = std::chrono::steady_clock::now();
-    auto snds = SpeedTest(xxhash64, 5, tg, 1'000'000, 4);
+  constexpr std::size_t key_len = 100;
+  constexpr std::size_t attempts = 10000;
 
-    std::cout << "Time taken(xxsh_64), microsec.: " << snds << '\n';
+  auto ns = SpeedTest(xxhash64, attempts, tg, key_len, 20);
 
-    snds = SpeedTest(murMurHash3_128, 5, tg, 1'000'000, 8);
+  std::cout << "Time taken(xxhash_64), nanosec.: " << ns.count() << '\n';
 
-    std::cout << "Time taken(mmh3_128), microsec.: " << snds << '\n';
+  ns = SpeedTest(murMurHash3_128, attempts, tg, key_len, 20);
 
-    snds = SpeedTest(xxhash64, 5, tg, 1'000'000, 8);
+  std::cout << "Time taken(mmh3_128), nanosec.: " << ns.count() << '\n';
 
-    std::cout << "Time taken(xxhash_64), microsec.: " << snds << '\n';
+  ns = SpeedTest(raw_access_wrapper, attempts, tg, key_len, key_len);
 
-    snds = SpeedTest(raw_access_wrapper, 5, tg, 1'000'000, 1'000'000);
+  std::cout << "Time taken(just for by byte), nanosec.: " << ns.count() << '\n';
 
-    std::cout << "Time taken(just for by byte), microsec.: " << snds << '\n';
+  ns = SpeedTest(memcpy_wrapper, attempts, tg, key_len, key_len);
 
-    snds = SpeedTest(memcpy_wrapper, 5, tg, 1'000'000, 1'000'000);
-
-    std::cout << "Time taken(memcpy), microsec.: " << snds << '\n';
-    
-
+  std::cout << "Time taken(memcpy), nanosec.: " << ns.count() << '\n';
 }

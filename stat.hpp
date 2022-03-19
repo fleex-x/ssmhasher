@@ -18,7 +18,7 @@ struct Stat {
   void setAttempts(std::size_t attempts_);
 
   void setStep(std::size_t step_);
-  RealSeconds runTest(std::size_t in_len);
+  auto runTest(std::size_t in_len);
 
 
   void set();
