@@ -9,7 +9,10 @@ using Microseconds =
 using Milliseconds =
     std::chrono::duration<long long, std::milli>;
 using Seconds = std::chrono::duration<long long>;
+using RealMicroseconds = double;
+using RealMilliseconds = double;
 using RealSeconds = double;
+
 using Clock = std::chrono::steady_clock;
 using TimePoint = Clock::time_point;
 

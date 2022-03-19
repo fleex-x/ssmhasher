@@ -1,5 +1,3 @@
-#pragma once
-
 #include <assert.h>
 
 #include <algorithm>
@@ -15,21 +13,21 @@
 #include "measure.hpp"
 
 namespace ssmhasher {
-Milliseconds SingleSpeedTest(HashFunction func, std::byte* key,
+Microseconds SingleSpeedTest(HashFunction func, std::byte* key,
                              std::size_t key_len, std::byte* out,
                              std::size_t out_len) {
   TimePoint begin = Now();
   func(key, key_len, out, out_len);
-  return AsMilliseconds(Now() - begin);
+  return AsMicroseconds(Now() - begin);
 }
 
-RealSeconds SpeedTest(HashFunction func, std::size_t attempts,
+RealMicroseconds SpeedTest(HashFunction func, std::size_t attempts,
                        TestGen& test_gen, std::size_t key_len,
                        std::size_t out_len) {
   std::byte* key_storage = new std::byte[key_len];
   std::byte* out_storage = new std::byte[out_len];
 
-  std::vector<Milliseconds> time_of_tests;
+  std::vector<Microseconds> time_of_tests;
   time_of_tests.reserve(attempts);
   for (std::size_t i = 0; i < attempts; ++i) {
     test_gen.gen(key_storage, key_len);
@@ -41,19 +39,19 @@ RealSeconds SpeedTest(HashFunction func, std::size_t attempts,
   std::vector<double> real_times(time_of_tests.size(), 0.0);
   std::transform(
       time_of_tests.begin(), time_of_tests.end(), real_times.begin(),
-      [&](Milliseconds time_ms) -> double { return time_ms.count(); });
+      [&](auto time) -> double { return time.count(); });
 
   // assume there is no Nan's 
   sort(real_times.begin(), real_times.end());
 
-  RealSeconds response = std::accumulate(begin(real_times), end(real_times), 0.0);
+  RealMicroseconds response = std::accumulate(begin(real_times), end(real_times), 0.0);
 
   delete[] out_storage;
   delete[] key_storage;
 
-  constexpr std::size_t MS_PER_SECOND = 1000;
+  // constexpr std::size_t MS_PER_SECOND = 1000;
 
-  return (response / MS_PER_SECOND) / real_times.size();
+  return (response ) / real_times.size();
 }
 
 }  // namespace ssmhasher
