@@ -17,9 +17,8 @@ void memcpy_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
 }
 
 const ssmhasher::HashFuncInfo table[] = {
-    {"memcpy", memcpy_wrapper, INT32_MAX},
+    {"memcpy", memcpy_wrapper, MAX_TEST_SIZE},
     {"xxhash32", basic_hash::xxhash32, 4},
-    {"xxhash32_v2", basic_hash::xxhash32_v2, 4},
     {"xxhash64", basic_hash::xxhash64, 8},
     {"murMurHash1", basic_hash::murMurHash1, 4},
     {"murMurHash2", basic_hash::murMurHash2, 4},
@@ -47,13 +46,22 @@ int main() {
     chart2[HF.name] = stat.buildJson(100, 1000)[HF.name];
   }
 
-  std::ofstream out1("chart1.json");
+#if defined(__aarch64__)
+  std::ofstream out1("chart1_m1.json");
   out1 << std::setw(2) << chart1 << std::endl;
   out1.close();
 
-  std::ofstream out2("chart2.json");
+  std::ofstream out2("chart2_m1.json");
   out2 << std::setw(2) << chart2 << std::endl;
   out2.close();
+#else
+  std::ofstream out1("chart1_x86.json");
+  out1 << std::setw(2) << chart1 << std::endl;
+  out1.close();
 
+  std::ofstream out2("chart2_x86.json");
+  out2 << std::setw(2) << chart2 << std::endl;
+  out2.close();
+#endif
   return 0;
 }

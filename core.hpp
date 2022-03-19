@@ -3,6 +3,8 @@
 #include <chrono>
 #include <cstddef>
 
+#define MAX_TEST_SIZE 1000
+
 namespace ssmhasher {
 using Microseconds =
     std::chrono::duration<long long, std::micro>;
