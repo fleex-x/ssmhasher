@@ -27,6 +27,9 @@ Nanoseconds SpeedTest(HashFunction func, std::size_t attempts,
   std::byte* key_storage = new std::byte[key_len];
   std::byte* out_storage = new std::byte[out_len];
 
+  assert(key_storage);
+  assert(out_storage);
+
   std::vector<Nanoseconds> time_of_tests;
   time_of_tests.reserve(attempts);
   for (std::size_t i = 0; i < attempts; ++i) {

@@ -19,7 +19,6 @@ void memcpy_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
 const ssmhasher::HashFuncInfo table[] = {
     {"memcpy", memcpy_wrapper, INT32_MAX},
     {"xxhash32", basic_hash::xxhash32, 4},
-    {"xxhash32_v2", basic_hash::xxhash32_v2, 4},
     {"xxhash64", basic_hash::xxhash64, 8},
     {"murMurHash1", basic_hash::murMurHash1, 4},
     {"murMurHash2", basic_hash::murMurHash2, 4},
