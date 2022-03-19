@@ -40,12 +40,12 @@ def print_plots(data, title, approximated):
 
     plt.title(title)
     plt.legend()
-    plt.show()
+    # plt.savefig('graphics/'title + '.png')
 
 def print_plots_from_file(file, approximated):
     with open(file) as chart1:
         data = json.load(chart1)
-        print_plots(data, file, approximated)
+        print_plots(data, file[:-5], approximated)
 
 for file in sys.argv[1:]:
     print_plots_from_file(file, True)
