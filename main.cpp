@@ -1,55 +1,59 @@
 
-#include "measure.hpp"
-#include "test_gen.hpp"
-#include "basic_hash.hpp"
-
 #include <assert.h>
-#include <cstring>
 
+#include <cstring>
+#include <fstream>
 #include <iostream>
 
-void raw_access_wrapper(std::byte * in, std::size_t key_len, std::byte * out, std::size_t out_len) {
-    assert(key_len <= out_len);
-    // memcpy((void*)out, (const void *)in, (int)key_len);
-     for (int i = 0; i < key_len; ++i) {
-        volatile std::byte x = in[i];
-    }
+#include "basic_hash.hpp"
+#include "measure.hpp"
+#include "stat.hpp"
+#include "test_gen.hpp"
+
+void memcpy_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
+                    std::size_t out_len) {
+  assert(key_len <= out_len);
+  memcpy((void *)out, (const void *)in, (int)key_len);
 }
 
-void memcpy_wrapper(std::byte * in, std::size_t key_len, std::byte * out, std::size_t out_len) {
-    assert(key_len <= out_len);
-    memcpy((void*)out, (const void *)in, (int)key_len);
-    //  for (int i = 0; i < key_len; ++i) {
-        // volatile std::byte x = in[i];
-    // }
-}
+const ssmhasher::HashFuncInfo table[] = {
+    {"memcpy", memcpy_wrapper, INT32_MAX},
+    {"xxhash32", basic_hash::xxhash32, 4},
+    {"xxhash32_v2", basic_hash::xxhash32_v2, 4},
+    {"xxhash64", basic_hash::xxhash64, 8},
+    {"murMurHash1", basic_hash::murMurHash1, 4},
+    {"murMurHash2", basic_hash::murMurHash2, 4},
+    {"murMurHash2_64", basic_hash::murMurHash2_64, 8},
+    {"murMurHash3_32", basic_hash::murMurHash3_32, 4},
+    {"murMurHash3_128", basic_hash::murMurHash3_128, 16}};
 
 int main() {
-    using namespace ssmhasher;
-    using namespace basic_hash;
+  using namespace ssmhasher;
 
+  nlohmann::json chart1;
+  nlohmann::json chart2;
 
-    TestGen tg;
-    auto b = std::chrono::steady_clock::now();
-    auto snds = SpeedTest(xxhash64, 5, tg, 1'000'000, 4);
+  for (const auto &HF : table) {
+    Stat stat(HF);
+    stat.setStep(2);
+    stat.setAttempts(1000);
+    chart1[HF.name] = stat.buildJson(1, 100)[HF.name];
+  }
 
-    std::cout << "Time taken(xxsh_64), microsec.: " << snds << '\n';
+  for (const auto &HF : table) {
+    Stat stat(HF);
+    stat.setStep(50);
+    stat.setAttempts(1000);
+    chart2[HF.name] = stat.buildJson(100, 1000)[HF.name];
+  }
 
-    snds = SpeedTest(murMurHash3_128, 5, tg, 1'000'000, 8);
+  std::ofstream out1("chart1.json");
+  out1 << std::setw(2) << chart1 << std::endl;
+  out1.close();
 
-    std::cout << "Time taken(mmh3_128), microsec.: " << snds << '\n';
+  std::ofstream out2("chart2.json");
+  out2 << std::setw(2) << chart2 << std::endl;
+  out2.close();
 
-    snds = SpeedTest(xxhash64, 5, tg, 1'000'000, 8);
-
-    std::cout << "Time taken(xxhash_64), microsec.: " << snds << '\n';
-
-    snds = SpeedTest(raw_access_wrapper, 5, tg, 1'000'000, 1'000'000);
-
-    std::cout << "Time taken(just for by byte), microsec.: " << snds << '\n';
-
-    snds = SpeedTest(memcpy_wrapper, 5, tg, 1'000'000, 1'000'000);
-
-    std::cout << "Time taken(memcpy), microsec.: " << snds << '\n';
-    
-
+  return 0;
 }
