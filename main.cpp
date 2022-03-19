@@ -17,6 +17,10 @@ void memcpy_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
 }
 
 const ssmhasher::HashFuncInfo table[] = {
+    {"memcpy", memcpy_wrapper, INT32_MAX},
+    {"xxhash32", basic_hash::xxhash32, 4},
+    {"xxhash32_v2", basic_hash::xxhash32_v2, 4},
+    {"xxhash64", basic_hash::xxhash64, 8},
     {"murMurHash1", basic_hash::murMurHash1, 4},
     {"murMurHash2", basic_hash::murMurHash2, 4},
     {"murMurHash2_64", basic_hash::murMurHash2_64, 8},
@@ -32,26 +36,22 @@ int main() {
   for (const auto &HF : table) {
     Stat stat(HF);
     stat.setStep(2);
-    stat.setAttempts(1000);
+    stat.setAttempts(1000000);
     chart1[HF.name] = stat.buildJson(1, 101)[HF.name];
   }
 
   for (const auto &HF : table) {
     Stat stat(HF);
     stat.setStep(50);
-    stat.setAttempts(100);
+    stat.setAttempts(1000000);
     chart2[HF.name] = stat.buildJson(100, 1000)[HF.name];
   }
 
-  /// TODO: figure out why data is so gay
-
-  std::fstream out1("chart1.json");
-  out1.clear();
+  std::ofstream out1("chart1.json");
   out1 << chart1 << std::endl;
   out1.close();
 
-  std::fstream out2("chart2.json");
-  out2.clear();
+  std::ofstream out2("chart2.json");
   out2 << chart2 << std::endl;
   out2.close();
 

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <vector>
-#include "measure.hpp"
+
 #include "core.hpp"
 #include "json.hpp"
+#include "measure.hpp"
 
 namespace ssmhasher {
 
@@ -27,13 +28,11 @@ class Stat {
 
   void setStep(std::size_t step_);
 
-
-  RealSeconds runTest(std::size_t in_len);
+  RealMicroseconds runTest(std::size_t in_len);
 
   void runTests(std::size_t l, std::size_t r);
 
   nlohmann::json buildJson(std::size_t l, std::size_t r);
-
 };
 
 }  // namespace ssmhasher

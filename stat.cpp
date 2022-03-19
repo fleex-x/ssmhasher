@@ -1,11 +1,13 @@
 #include "stat.hpp"
+
 #include <stdio.h>
-#include <string>
+
 #include <iostream>
+#include <string>
 
 namespace ssmhasher {
 
-RealSeconds Stat::runTest(std::size_t in_len) {
+RealMicroseconds Stat::runTest(std::size_t in_len) {
   return SpeedTest(funcInfo.func, attempts, TG, in_len, funcInfo.out_len);
 }
 
@@ -13,7 +15,8 @@ void Stat::setAttempts(std::size_t attempts_) { attempts = attempts_; }
 
 void Stat::setStep(std::size_t step_) { step = step_; }
 
-Stat::Stat(const HashFuncInfo& HF) : funcInfo(HF), attempts(100), step(1), TG(1) {}
+Stat::Stat(const HashFuncInfo& HF)
+    : funcInfo(HF), attempts(100), step(1), TG(1) {}
 
 void Stat::runTests(std::size_t l, std::size_t r) {
   for (std::size_t i = l; i < r; i += step) {
@@ -25,7 +28,7 @@ nlohmann::json Stat::buildJson(std::size_t l, std::size_t r) {
   nlohmann::json js;
 
   for (std::size_t i = l; i < r; i += step) {
-    RealSeconds result = runTest(i);
+    RealMicroseconds result = runTest(i);
     js[funcInfo.name].push_back({std::to_string(i), std::to_string(result)});
   }
 
