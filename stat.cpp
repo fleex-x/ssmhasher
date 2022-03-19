@@ -7,7 +7,7 @@ namespace ssmhasher {
 Stat::Stat(HashFunction f, std::size_t len)
     : func(f), out_len(len), attempts(100) {}
 
-RealSeconds Stat::runTest(std::size_t in_len) {
+auto Stat::runTest(std::size_t in_len) {
   return SpeedTest(func, attempts, TG, in_len, out_len);
 }
 

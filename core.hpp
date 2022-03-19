@@ -13,6 +13,8 @@ using RealMicroseconds = double;
 using RealMilliseconds = double;
 using RealSeconds = double;
 
+using Nanoseconds = std::chrono::duration<long long, std::nano>;
+
 using Clock = std::chrono::steady_clock;
 using TimePoint = Clock::time_point;
 
@@ -35,5 +37,11 @@ template <typename Duration>
 Seconds AsSeconds(Duration dur) {
   return std::chrono::duration_cast<Seconds>(dur);
 }
+
+template <typename Duration>
+Nanoseconds AsNanoseconds(Duration dur) {
+  return std::chrono::duration_cast<Nanoseconds>(dur);
+}
+
 
 }  // namespace ssmhasher
