@@ -7,7 +7,7 @@
 
 namespace ssmhasher {
 
-RealMicroseconds Stat::runTest(std::size_t in_len) {
+Nanoseconds Stat::runTest(std::size_t in_len) {
   return SpeedTest(funcInfo.func, attempts, TG, in_len, funcInfo.out_len);
 }
 
@@ -28,8 +28,8 @@ nlohmann::json Stat::buildJson(std::size_t l, std::size_t r) {
   nlohmann::json js;
 
   for (std::size_t i = l; i <= r; i += step) {
-    RealMicroseconds result = runTest(i);
-    js[funcInfo.name].push_back({std::to_string(i), std::to_string(result)});
+    Nanoseconds result = runTest(i);
+    js[funcInfo.name].push_back({std::to_string(i), std::to_string(result.count())});
   }
 
   return js;

@@ -28,7 +28,7 @@ class Stat {
 
   void setStep(std::size_t step_);
 
-  RealMicroseconds runTest(std::size_t in_len);
+  Nanoseconds runTest(std::size_t in_len);
 
   void runTests(std::size_t l, std::size_t r);
 
