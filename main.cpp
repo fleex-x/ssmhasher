@@ -48,11 +48,11 @@ int main() {
   }
 
   std::ofstream out1("chart1.json");
-  out1 << chart1 << std::endl;
+  out1 << std::setw(2) << chart1 << std::endl;
   out1.close();
 
   std::ofstream out2("chart2.json");
-  out2 << chart2 << std::endl;
+  out2 << std::setw(2) << chart2 << std::endl;
   out2.close();
 
   return 0;
