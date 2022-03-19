@@ -8,10 +8,10 @@
 #include "test_gen.hpp"
 
 namespace ssmhasher {
-Microseconds SingleSpeedTest(HashFunction func, std::byte* key,
+Nanoseconds SingleSpeedTest(HashFunction func, std::byte* key,
                              std::size_t key_len, std::byte* out,
                              std::size_t out_len);
-RealMicroseconds SpeedTest(HashFunction func, std::size_t attempts,
+Nanoseconds SpeedTest(HashFunction func, std::size_t attempts,
                            TestGen& test_gen, std::size_t key_len,
                            std::size_t out_len);
 
