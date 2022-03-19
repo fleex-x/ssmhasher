@@ -46,6 +46,15 @@ int main() {
     chart2[HF.name] = stat.buildJson(100, 1000)[HF.name];
   }
 
+#if defined(__aarch64__)
+  std::ofstream out1("chart1_m1.json");
+  out1 << std::setw(2) << chart1 << std::endl;
+  out1.close();
+
+  std::ofstream out2("chart2_m1.json");
+  out2 << std::setw(2) << chart2 << std::endl;
+  out2.close();
+#else
   std::ofstream out1("chart1.json");
   out1 << std::setw(2) << chart1 << std::endl;
   out1.close();
@@ -53,6 +62,6 @@ int main() {
   std::ofstream out2("chart2.json");
   out2 << std::setw(2) << chart2 << std::endl;
   out2.close();
-
+#endif
   return 0;
 }
