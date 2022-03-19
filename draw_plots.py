@@ -17,9 +17,7 @@ def print_plots(data, title, approximated):
     plt.grid()
     plt.xlabel('number of bytes')
     plt.ylabel('time (ns)')
-    for ind, hash_function in enumerate(data):
-        # if hash_function == "murMurHash3_32":
-        #     continue
+    for hash_function in data:
         xs = np.array([point[0] for point in data[hash_function]])
         ys = np.array([point[1] for point in data[hash_function]])
 
@@ -42,12 +40,15 @@ def print_plots(data, title, approximated):
 
     plt.title(title)
     plt.legend()
-    plt.savefig('graphics/' + title + '.png')
+    plt.show()
+    # plt.savefig('graphics/' + title + '.png')
 
 def print_plots_from_file(file, approximated):
     with open(file) as chart1:
         data = json.load(chart1)
-        print_plots(data, file[6:-5], approximated)
+        print_plots(data, file[7:-5], approximated)
 
-for file in sys.argv[1:]:
+step = float(sys.argv[1])
+
+for file in sys.argv[2:]:
     print_plots_from_file(file, True)
