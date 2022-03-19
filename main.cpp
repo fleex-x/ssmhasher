@@ -36,14 +36,14 @@ int main() {
   for (const auto &HF : table) {
     Stat stat(HF);
     stat.setStep(2);
-    stat.setAttempts(1000000);
-    chart1[HF.name] = stat.buildJson(1, 101)[HF.name];
+    stat.setAttempts(1000);
+    chart1[HF.name] = stat.buildJson(1, 100)[HF.name];
   }
 
   for (const auto &HF : table) {
     Stat stat(HF);
     stat.setStep(50);
-    stat.setAttempts(1000000);
+    stat.setAttempts(1000);
     chart2[HF.name] = stat.buildJson(100, 1000)[HF.name];
   }
 
