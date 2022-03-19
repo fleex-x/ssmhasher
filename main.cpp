@@ -55,11 +55,11 @@ int main() {
   out2 << std::setw(2) << chart2 << std::endl;
   out2.close();
 #else
-  std::ofstream out1("chart1.json");
+  std::ofstream out1("chart1_x86.json");
   out1 << std::setw(2) << chart1 << std::endl;
   out1.close();
 
-  std::ofstream out2("chart2.json");
+  std::ofstream out2("chart2_x86.json");
   out2 << std::setw(2) << chart2 << std::endl;
   out2.close();
 #endif
