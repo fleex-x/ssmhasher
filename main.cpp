@@ -2,50 +2,58 @@
 #include <assert.h>
 
 #include <cstring>
+#include <fstream>
 #include <iostream>
-#include <random>
 
 #include "basic_hash.hpp"
 #include "measure.hpp"
+#include "stat.hpp"
 #include "test_gen.hpp"
-
-void raw_access_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
-                        std::size_t out_len) {
-  // assert(key_len <= out_len);
-  for (int i = 0; i < key_len; ++i) {
-    volatile std::byte x = in[i];
-  }
-}
 
 void memcpy_wrapper(std::byte *in, std::size_t key_len, std::byte *out,
                     std::size_t out_len) {
-  // assert(key_len <= out_len);
+  assert(key_len <= out_len);
   memcpy((void *)out, (const void *)in, (int)key_len);
 }
 
+const ssmhasher::HashFuncInfo table[] = {
+    {"memcpy", memcpy_wrapper, INT32_MAX},
+    {"xxhash32", basic_hash::xxhash32, 4},
+    {"xxhash32_v2", basic_hash::xxhash32_v2, 4},
+    {"xxhash64", basic_hash::xxhash64, 8},
+    {"murMurHash1", basic_hash::murMurHash1, 4},
+    {"murMurHash2", basic_hash::murMurHash2, 4},
+    {"murMurHash2_64", basic_hash::murMurHash2_64, 8},
+    {"murMurHash3_32", basic_hash::murMurHash3_32, 4},
+    {"murMurHash3_128", basic_hash::murMurHash3_128, 16}};
+
 int main() {
   using namespace ssmhasher;
-  using namespace basic_hash;
 
-  TestGen tg (std::rand());
-  auto b = std::chrono::steady_clock::now();
+  nlohmann::json chart1;
+  nlohmann::json chart2;
 
-  constexpr std::size_t key_len = 100;
-  constexpr std::size_t attempts = 10000;
+  for (const auto &HF : table) {
+    Stat stat(HF);
+    stat.setStep(2);
+    stat.setAttempts(1000);
+    chart1[HF.name] = stat.buildJson(1, 100)[HF.name];
+  }
 
-  auto ns = SpeedTest(xxhash64, attempts, tg, key_len, 20);
+  for (const auto &HF : table) {
+    Stat stat(HF);
+    stat.setStep(50);
+    stat.setAttempts(1000);
+    chart2[HF.name] = stat.buildJson(100, 1000)[HF.name];
+  }
 
-  std::cout << "Time taken(xxhash_64), nanosec.: " << ns.count() << '\n';
+  std::ofstream out1("chart1.json");
+  out1 << std::setw(2) << chart1 << std::endl;
+  out1.close();
 
-  ns = SpeedTest(murMurHash3_128, attempts, tg, key_len, 20);
+  std::ofstream out2("chart2.json");
+  out2 << std::setw(2) << chart2 << std::endl;
+  out2.close();
 
-  std::cout << "Time taken(mmh3_128), nanosec.: " << ns.count() << '\n';
-
-  ns = SpeedTest(raw_access_wrapper, attempts, tg, key_len, key_len);
-
-  std::cout << "Time taken(just for by byte), nanosec.: " << ns.count() << '\n';
-
-  ns = SpeedTest(memcpy_wrapper, attempts, tg, key_len, key_len);
-
-  std::cout << "Time taken(memcpy), nanosec.: " << ns.count() << '\n';
+  return 0;
 }
