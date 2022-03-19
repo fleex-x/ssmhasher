@@ -1,6 +1,7 @@
 
 #include "measure.hpp"
 #include "test_gen.hpp"
+#include "basic_hash.hpp"
 
 #include <assert.h>
 #include <cstring>
@@ -14,13 +15,21 @@ void memcpy_wrapper(std::byte * in, std::size_t key_len, std::byte * out, std::s
 
 int main() {
     using namespace ssmhasher;
+    using namespace basic_hash;
 
 
     TestGen tg;
     auto b = std::chrono::steady_clock::now();
-    auto snds = SpeedTest(memcpy_wrapper, 1, tg, 1'000'000'000, 1'000'000'000);
+    auto snds = SpeedTest(xxhash32, 5, tg, 1'000'000, 4);
 
-    std::cout << "Real time taken: " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - b).count() << '\n';
-    std::cout << "Time taken: " << snds << '\n';
+    std::cout << "Time taken(xxsh32), microsec.: " << snds << '\n';
+
+    snds = SpeedTest(xxhash64, 5, tg, 1'000'000, 8);
+
+    std::cout << "Time taken(xxhash64), microsec.: " << snds << '\n';
+
+    snds = SpeedTest(murMurHash2_64, 5, tg, 1'000'000, 8);
+
+    std::cout << "Time taken(mmh2_64), microsec.: " << snds << '\n';
 
 }
