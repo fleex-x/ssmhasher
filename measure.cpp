@@ -27,9 +27,6 @@ Nanoseconds SpeedTest(HashFunction func, std::size_t attempts,
   std::byte* key_storage = new std::byte[key_len];
   std::byte* out_storage = new std::byte[out_len];
 
-  assert(key_storage);
-  assert(out_storage);
-
   std::vector<Nanoseconds> time_of_tests;
   time_of_tests.reserve(attempts);
   for (std::size_t i = 0; i < attempts; ++i) {
@@ -38,13 +35,7 @@ Nanoseconds SpeedTest(HashFunction func, std::size_t attempts,
         SingleSpeedTest(func, key_storage, key_len, out_storage, out_len);
     time_of_tests.push_back(current_test_time);
   }
-
-  // std::vector<double> real_times(time_of_tests.size(), 0.0);
-  // std::transform(
-  // time_of_tests.begin(), time_of_tests.end(), real_times.begin(),
-  // [&](auto time) -> double { return time.count(); });
-
-  // assume there is no Nan's
+  
   sort(time_of_tests.begin(), time_of_tests.end(),
        [&](auto a, auto b) { return a.count() < b.count(); });
 
@@ -54,8 +45,6 @@ Nanoseconds SpeedTest(HashFunction func, std::size_t attempts,
 
   delete[] out_storage;
   delete[] key_storage;
-
-  // constexpr std::size_t MS_PER_SECOND = 1000;
 
   return Nanoseconds(response.count() / time_of_tests.size());
 }
