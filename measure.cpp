@@ -35,9 +35,6 @@ Nanoseconds SpeedTest(HashFunction func, std::size_t attempts,
         SingleSpeedTest(func, key_storage, key_len, out_storage, out_len);
     time_of_tests.push_back(current_test_time);
   }
-  
-  sort(time_of_tests.begin(), time_of_tests.end(),
-       [&](auto a, auto b) { return a.count() < b.count(); });
 
   Nanoseconds response =
       accumulate(begin(time_of_tests), end(time_of_tests), AsNanoseconds(0ns),
